@@ -1,0 +1,1519 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marcus Martin | Biblioteca Autoral</title>
+    <!-- Carrega Tailwind CSS para estilização moderna e dark mode -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Configuração de fonte e scrollbar customizada para estética dark */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+
+        :root {
+            --color-bg: #0f172a;
+            --color-surface: #1e293b;
+            --color-primary: #f59e0b;
+            --color-primary-hover: #d97706;
+            --color-text-main: #f8fafc;
+            --color-text-muted: #94a3b8;
+            color-scheme: dark;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-bg);
+            color: var(--color-text-muted);
+            transition: background-color 0.3s;
+            font-size: 1rem;
+            overflow-x: hidden;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-family: 'Playfair Display', serif;
+            color: var(--color-text-main);
+        }
+
+        /* Estilos da barra de rolagem para o modo dark */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--color-bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+
+        /* Utilitários Customizados */
+        .text-accent {
+            color: var(--color-primary);
+        }
+
+        .bg-accent-button {
+            background-color: var(--color-primary);
+        }
+
+        .hover\:bg-accent-button:hover {
+            background-color: var(--color-primary-hover);
+        }
+
+        .border-accent {
+            border-color: var(--color-primary);
+        }
+
+        .shadow-accent\/20 {
+            box-shadow: 0 10px 15px -3px rgba(245, 158, 11, 0.2), 0 4px 6px -4px rgba(245, 158, 11, 0.2);
+        }
+
+        /* Glassmorphism Classes */
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .glass-card {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card:hover {
+            background: rgba(30, 41, 59, 0.8);
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            border-color: rgba(245, 158, 11, 0.3);
+        }
+
+        /* Hero Background Animation */
+        .hero-bg {
+            background: radial-gradient(circle at 50% 50%, #1e293b 0%, #0f172a 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-bg::before {
+            content: '';
+            position: absolute;
+            width: 150%;
+            height: 150%;
+            top: -25%;
+            left: -25%;
+            background: radial-gradient(circle, rgba(245, 158, 11, 0.1) 0%, transparent 60%);
+            animation: pulse-glow 15s infinite alternate;
+            z-index: 0;
+        }
+
+        @keyframes pulse-glow {
+            0% {
+                transform: scale(1) translate(0, 0);
+                opacity: 0.3;
+            }
+
+            100% {
+                transform: scale(1.1) translate(-2%, 2%);
+                opacity: 0.6;
+            }
+        }
+
+        /* Fade In Animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translate3d(0, 20px, 0);
+            }
+
+            to {
+                opacity: 1;
+                transform: translate3d(0, 0, 0);
+            }
+        }
+
+        .animate-fade-in-up {
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        .stagger-1 {
+            animation-delay: 0.1s;
+        }
+
+        .stagger-2 {
+            animation-delay: 0.2s;
+        }
+
+        .stagger-3 {
+            animation-delay: 0.3s;
+        }
+
+        /* Modal Blur Enhancement */
+        #book-modal,
+        #login-modal,
+        #crud-modal {
+            backdrop-filter: blur(5px);
+        }
+
+        /* Cores de mensagem (Cinza/Azul, Verde, Vermelho) */
+        .bg-message-info {
+            background-color: #334155;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .bg-message-success {
+            background-color: #064e3b;
+            border-left: 4px solid #10b981;
+        }
+
+        .bg-message-error {
+            background-color: #7f1d1d;
+            border-left: 4px solid #ef4444;
+        }
+
+        /* Estilo para focar inputs no tema */
+        .focus\:ring-amber-500:focus {
+            --tw-ring-opacity: 1;
+            --tw-ring-color: #f59e0b;
+        }
+    </style>
+    <!-- Importações do Firebase -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, addDoc, setDoc, updateDoc, deleteDoc, collection, query, orderBy, getDocs, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
+
+
+        // Constantes de Ambiente e Dados Iniciais
+        const APP_VERSION = "2.0.1"; // Versão atualizada
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        const cleanAppId = appId.replace(/\//g, '-');
+        const WHATSAPP_NUMBER = "5581987921952";
+        const ADMIN_USERNAME = "marcusmartin";
+        let ADMIN_PASSWORD = "thiagocucabeludo";
+        const ADMIN_USERNAME_DISPLAY = "Marcus Martin";
+
+        const INITIAL_AUTHOR_INFO = {
+            name: ADMIN_USERNAME_DISPLAY,
+            bio: 'Bem-vindo(a) à minha biblioteca autoral. Sou Marcus Martin e aqui apresento minhas obras. Navegue e clique em "Detalhes" para explorar a sinopse e ficha técnica de cada trabalho.',
+            authorPhotoUrl: 'https://placehold.co/150x150/1e293b/f8fafc?text=Foto+do+Autor'
+        };
+
+        const INITIAL_BOOKS = [
+            { id: 'ex1', orderIndex: 1, title: 'O Labirinto da Alma', authorName: ADMIN_USERNAME_DISPLAY, genre: 'Suspense Psicológico', isbn: '978-6555249871', publicationDate: '2023-01-15', coverImageUrl: 'https://placehold.co/400x600/1e293b/f8fafc?text=Capa+Exemplo+1', description: 'Uma jornada complexa pela mente de um detetive atormentado por segredos passados. Cada pista é um passo em direção à verdade... ou à loucura.', extraDetails: 'Primeiro volume da trilogia "Sombras Urbanas".' },
+            { id: 'ex2', orderIndex: 2, title: 'A Crônica dos Elfos Perdidos', authorName: ADMIN_USERNAME_DISPLAY, genre: 'Fantasia Épica', isbn: '978-8535911482', publicationDate: '2022-07-20', coverImageUrl: 'https://placehold.co/400x600/1e293b/f8fafc?text=Capa+Exemplo+2', description: 'Milênios de paz são interrompidos quando a magia ancestral desaparece, forçando uma jovem guerreira a buscar a lendária raça élfica.', extraDetails: 'Uma aventura clássica com dragões e reinos esquecidos.' },
+            { id: 'ex3', orderIndex: 3, title: 'Futuro Esquecido', authorName: ADMIN_USERNAME_DISPLAY, genre: 'Ficção Científica', isbn: '978-8543105742', publicationDate: '2024-03-01', coverImageUrl: 'https://placehold.co/400x600/1e293b/f8fafc?text=Capa+Exemplo+3', description: 'Em uma Terra pós-apocalíptica dominada por I.A., um grupo de sobreviventes luta para resgatar memórias humanas perdidas em códigos binários.', extraDetails: 'Vencedor do prêmio "Orion" de melhor distopia.' },
+            { id: 'ex4', orderIndex: 4, title: 'O Mistério da Rua das Flores', authorName: ADMIN_USERNAME_DISPLAY, genre: 'Romance Policial', isbn: '978-8501069507', publicationDate: '2021-11-10', coverImageUrl: 'https://placehold.co/400x600/1e293b/f8fafc?text=Capa+Exemplo+4', description: 'Um assassinato aparentemente simples se transforma em um emaranhado de paixões e traições em uma pequena cidade litorânea.', extraDetails: 'Inspirado em fatos reais de 1950.' },
+            { id: 'ex5', orderIndex: 5, title: 'A Revolução Silenciosa', authorName: ADMIN_USERNAME_DISPLAY, genre: 'Drama Histórico', isbn: '978-8580572836', publicationDate: '2020-05-25', coverImageUrl: 'https://placehold.co/400x600/1e293b/f8fafc?text=Capa+Exemplo+5', description: 'A saga de uma família de imigrantes que desafia as normas sociais durante um período de grandes mudanças políticas e culturais no Brasil.', extraDetails: 'Baseado em pesquisa de campo e documentos da época.' },
+            { id: 'ex6', orderIndex: 6, title: 'Código Sigma', authorName: ADMIN_USERNAME_DISPLAY, genre: 'Tecno-Thriller', isbn: '978-8576848033', publicationDate: '2023-09-08', coverImageUrl: 'https://placehold.co/400x600/1e293b/f8fafc?text=Capa+Exemplo+6', description: 'Um hacker é recrutado por uma agência secreta para desvendar um código que pode paralisar a infraestrutura global em 48 horas.', extraDetails: 'Cheio de reviravoltas e alta tecnologia.' },
+            { id: 'ex7', orderIndex: 7, title: 'O Último Poema do Século', authorName: ADMIN_USERNAME_DISPLAY, genre: 'Poesia/Contos', isbn: '978-8535925403', publicationDate: '2019-02-18', coverImageUrl: 'https://placehold.co/400x600/1e293b/f8fafc?text=Capa+Exemplo+7', description: 'Uma coletânea de contos e poemas que exploram temas de identidade, melancolia e esperança na virada do milênio.', extraDetails: 'Uma obra-prima lírica de Marcus Martin.' },
+            { id: 'ex8', orderIndex: 8, title: 'Jardim de Vidro', authorName: ADMIN_USERNAME_DISPLAY, genre: 'Ficção Literária', isbn: '978-8525046039', publicationDate: '2024-06-12', coverImageUrl: 'https://placehold.co/400x600/1e293b/f8fafc?text=Capa+Exemplo+8', description: 'A história tocante de um artista recluso que encontra inspiração e redenção ao cuidar de um jardim secreto, feito inteiramente de vidro.', extraDetails: 'Um best-seller internacional.' },
+        ];
+
+        // Variáveis de Estado (State Variables)
+        let app, db, auth, storage;
+        let currentUserId = null;
+        let isAuthReady = false; // Indica se a autenticação básica foi resolvida
+        let isAdmin = false;
+        let books = INITIAL_BOOKS;
+        let filteredBooks = []; // Para a busca e filtro
+        let authorInfo = INITIAL_AUTHOR_INFO;
+        let currentCategory = 'Todos';
+        let searchQuery = '';
+
+        // Referências de UI (Garanta que os elementos estejam carregados)
+        let welcomeScreen, mainContainer, loginModal, bookModal, crudModal, confirmationModal;
+        let loginForm, newPasswordInput, bookForm, crudTitle, authNameDisplay, logoutButton, booksListContainer, adminBooksTableBody, authorAboutTextarea, authorPhotoFileInput, authorBioDisplay, authorPhotoDisplay;
+
+        // Função utilitária para mapear referências de UI
+        const setupRefs = () => {
+            welcomeScreen = document.getElementById('welcome-screen');
+            mainContainer = document.getElementById('main-container-app');
+            loginModal = window.loginModal = document.getElementById('login-modal');
+            bookModal = window.bookModal = document.getElementById('book-modal');
+            crudModal = window.crudModal = document.getElementById('crud-modal');
+            confirmationModal = window.confirmationModal = document.getElementById('confirmation-modal');
+
+            loginForm = document.getElementById('login-form');
+            newPasswordInput = document.getElementById('new-admin-password');
+            bookForm = document.getElementById('book-form');
+            crudTitle = document.getElementById('crud-title');
+            authNameDisplay = document.getElementById('auth-name-display');
+            logoutButton = document.getElementById('logout-button');
+            booksListContainer = document.getElementById('books-list-container');
+            adminBooksTableBody = document.getElementById('admin-books-table-body');
+            authorAboutTextarea = document.getElementById('author-about');
+            authorPhotoFileInput = document.getElementById('author-photo-file');
+            authorBioDisplay = document.getElementById('author-bio-display');
+            authorPhotoDisplay = document.getElementById('author-photo-display');
+        };
+
+        // =========================================================
+        // FireStore Paths and Storage
+        // =========================================================
+        const getPublicBooksCollectionRef = () => collection(db, `artifacts/${cleanAppId}/public/data/books`);
+        const getAuthorProfileDocRef = () => doc(db, `artifacts/${cleanAppId}/public/data/author_config/main_profile`);
+
+        const uploadFileAndGetUrl = async (file, type, fileName) => {
+            if (!storage) return null;
+
+            const filePath = `marcusmartin/img/${type}/${Date.now()}_${fileName}`;
+            const fileRef = storageRef(storage, filePath);
+
+            try {
+                const snapshot = await uploadBytes(fileRef, file);
+                const downloadURL = await getDownloadURL(snapshot.ref);
+                return downloadURL;
+            } catch (e) {
+                console.error("Erro no upload para o Storage:", e);
+                showCustomMessage(`Falha no upload do arquivo. Erro: ${e.code}`, 'error');
+                return null;
+            }
+        };
+
+        // =========================================================
+        // 1. INICIALIZAÇÃO E AUTENTICAÇÃO (ROBUSTA)
+        // =========================================================
+
+        const initFirebase = async () => {
+            if (Object.keys(firebaseConfig).length === 0) {
+                console.error("ERRO: Configuração do Firebase não encontrada.");
+                isAuthReady = true;
+                enterApp(); // Fallback com mock data
+                return;
+            }
+
+            app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+            storage = getStorage(app);
+            setLogLevel('error');
+
+            // 1. Tenta autenticar de forma síncrona
+            try {
+                let userCredential;
+                if (initialAuthToken) {
+                    userCredential = await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    userCredential = await signInAnonymously(auth);
+                }
+                currentUserId = userCredential.user.uid;
+            } catch (error) {
+                console.error("Falha na autenticação inicial:", error);
+            }
+
+            isAuthReady = true;
+
+            // 2. Transição automática para Convidado (Comportamento de correção de bug no navegador)
+            // 2. Transição automática para Convidado (Comportamento de correção de bug no navegador)
+            // Se já estivermos no modo convidado (mainContainer visível), força o carregamento dos listeners
+            if (!isAdmin && mainContainer && !mainContainer.classList.contains('hidden')) {
+                startFirestoreListeners();
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setupRefs();
+
+            // Inicia o Firebase de forma assíncrona
+            initFirebase();
+
+            // Entrada automática como convidado (Bypass Welcome Screen)
+            handleGuestEntry();
+
+            // Adiciona o número da versão ao rodapé
+            document.getElementById('app-version').textContent = `v${APP_VERSION}`;
+
+            // Safety Net: Garante que os livros apareçam mesmo se o Firebase demorar ou falhar silenciosamente
+            setTimeout(() => {
+                const container = document.getElementById('books-list-container');
+                if (container && container.children.length === 0) {
+                    console.warn("Safety Net: Forçando renderização de emergência.");
+                    isAuthReady = true; // Força estado pronto para permitir leitura
+                    startFirestoreListeners();
+                }
+            }, 3000);
+        }, 3000);
+
+        // Garante limpeza final do input de busca após carregamento
+        setTimeout(() => {
+            const searchInput = document.getElementById('search-input');
+            if (searchInput) {
+                searchInput.value = '';
+                searchInput.setAttribute('autocomplete', 'off');
+            }
+        }, 500);
+
+
+        // Funções de entrada no aplicativo
+        window.enterApp = () => {
+            welcomeScreen.classList.add('hidden');
+            mainContainer.classList.remove('hidden');
+            mainContainer.classList.add('flex');
+
+            if (isAuthReady) {
+                startFirestoreListeners();
+            }
+        };
+
+        window.handleGuestEntry = () => {
+            isAdmin = false;
+            // Garante que a busca inicie limpa
+            searchQuery = '';
+            const searchInput = document.getElementById('search-input');
+            if (searchInput) searchInput.value = '';
+
+            enterApp();
+        };
+
+        // =========================================================
+        // 2. FUNÇÕES DE AUTENTICAÇÃO/ADMIN
+        // =========================================================
+
+        window.handleAdminLogin = (event) => {
+            event.preventDefault();
+            const username = loginForm.username.value.trim(); // Added trim()
+            const password = loginForm.password.value.trim(); // Added trim()
+
+            console.log("Tentativa de Login:", {
+                inputUser: username,
+                expectedUser: ADMIN_USERNAME,
+                passMatch: password === ADMIN_PASSWORD
+            });
+
+            if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+                isAdmin = true;
+                loginModal.classList.add('hidden');
+                updateAuthStatusUI(true);
+
+                // Garante que a transição de tela ocorra
+                if (mainContainer.classList.contains('hidden')) {
+                    enterApp();
+                }
+
+                // Força a renderização Admin
+                startFirestoreListeners();
+
+                showCustomMessage('Bem-vindo, Administrador Marcus Martin!', 'success');
+            } else {
+                showCustomMessage('Credenciais inválidas.', 'error');
+            }
+        };
+
+        window.changeAdminPassword = () => {
+            if (!isAdmin) return;
+            const newPassword = newPasswordInput.value;
+
+            if (newPassword.length < 6) {
+                showCustomMessage("A senha deve ter pelo menos 6 caracteres.", 'error');
+                return;
+            }
+
+            ADMIN_PASSWORD = newPassword;
+            newPasswordInput.value = '';
+            showCustomMessage("Senha de Admin alterada com sucesso! (Simulação local)", 'success');
+        };
+
+        window.handleLogout = async () => {
+            if (isAdmin) {
+                isAdmin = false;
+                updateAuthStatusUI(false);
+                showCustomMessage('Você saiu do modo de administração.', 'info');
+
+                toggleFullscreen(false);
+                startFirestoreListeners(); // Recarrega os dados como convidado
+            } else {
+                try {
+                    await signOut(auth);
+                    showCustomMessage('Logout realizado com sucesso.', 'info');
+                } catch (e) {
+                    console.error("Erro ao sair:", e);
+                }
+            }
+        };
+
+        const updateAuthStatusUI = (isLoggedIn) => {
+            if (isLoggedIn) {
+                document.getElementById('tutorial-button').classList.remove('hidden');
+                authNameDisplay.textContent = 'Modo Admin: Marcus Martin';
+                logoutButton.classList.remove('hidden');
+                document.getElementById('login-button-desktop').classList.add('hidden');
+                document.getElementById('mobile-login-button').classList.add('hidden');
+            } else {
+                document.getElementById('tutorial-button').classList.add('hidden');
+                authNameDisplay.textContent = 'Usuário Convidado';
+                logoutButton.classList.add('hidden');
+                document.getElementById('login-button-desktop').classList.remove('hidden');
+                document.getElementById('mobile-login-button').classList.remove('hidden');
+            }
+        };
+
+        // =========================================================
+        // 3. FLUXO DE CARREGAMENTO DE DADOS
+        // =========================================================
+
+        const startFirestoreListeners = async () => {
+            // Se db não estiver inicializado (erro de config ou init), usa dados locais
+            if (!db) {
+                console.warn("Firestore não inicializado. Usando dados locais (Offline/Demo Mode).");
+                books = INITIAL_BOOKS;
+                authorInfo = INITIAL_AUTHOR_INFO;
+                if (isAdmin) {
+                    renderViews(); // Renderiza painel admin com dados locais
+                } else {
+                    applyFilters(); // Renderiza convidado com dados locais
+                }
+                return;
+            }
+
+            if (!isAuthReady) return;
+
+            try {
+                const authorDocRef = getAuthorProfileDocRef();
+                const booksRef = getPublicBooksCollectionRef();
+                const q = query(booksRef, orderBy("orderIndex"));
+
+                if (isAdmin) {
+                    // ADMIN: Carregamento
+                    try {
+                        let authorSnapshot = await getDoc(authorDocRef);
+                        if (!authorSnapshot.exists()) {
+                            await setDoc(authorDocRef, INITIAL_AUTHOR_INFO);
+                            authorSnapshot = await getDoc(authorDocRef);
+                        }
+                        authorInfo = authorSnapshot.data();
+
+                        let snapshot = await getDocs(q);
+                        if (snapshot.empty) {
+                            console.log("Coleção vazia. Adicionando livros de exemplo.");
+                            const promises = INITIAL_BOOKS.map(book => {
+                                const { id, ...data } = book;
+                                return addDoc(booksRef, data);
+                            });
+                            await Promise.all(promises);
+                            snapshot = await getDocs(q);
+                        }
+
+                        books = [];
+                        snapshot.forEach(doc => {
+                            books.push({ id: doc.id, ...doc.data() });
+                        });
+                        renderViews();
+
+                    } catch (e) {
+                        console.error("Erro dados Admin:", e);
+                        throw e; // Repassa para o catch externo
+                    }
+
+                } else {
+                    // GUEST: Leitura Otimizada
+                    const [authorSnapshot, booksSnapshot] = await Promise.all([
+                        getDoc(authorDocRef).catch(() => ({ exists: () => false })),
+                        getDocs(q).catch(() => ({ empty: true, forEach: () => { } }))
+                    ]);
+
+                    authorInfo = authorSnapshot.exists() ? authorSnapshot.data() : INITIAL_AUTHOR_INFO;
+
+                    books = [];
+                    if (booksSnapshot && !booksSnapshot.empty) {
+                        booksSnapshot.forEach(doc => {
+                            books.push({ id: doc.id, ...doc.data() });
+                        });
+                    }
+
+                    if (books.length === 0) books = INITIAL_BOOKS;
+
+                    applyFilters(); // Garante renderização e filtro inicial
+                }
+
+            } catch (error) {
+                console.error("Erro crítico no carregamento de dados. Revertendo para dados locais.", error);
+                books = INITIAL_BOOKS;
+                authorInfo = INITIAL_AUTHOR_INFO;
+                applyFilters();
+            }
+        };
+
+        // Função para mover o livro com setas (Reordenamento)
+        window.moveBook = async (bookId, direction) => {
+            if (!isAdmin) return;
+
+            const index = books.findIndex(b => b.id === bookId);
+            if (index === -1) return;
+
+            let newIndex = index;
+            if (direction === 'up' && index > 0) newIndex = index - 1;
+            else if (direction === 'down' && index < books.length - 1) newIndex = index + 1;
+            else return;
+
+            const tempBooks = [...books];
+            const [movedBook] = tempBooks.splice(index, 1);
+            tempBooks.splice(newIndex, 0, movedBook);
+
+            const updates = [];
+            const booksRef = getPublicBooksCollectionRef();
+
+            tempBooks.forEach((book, idx) => {
+                const newOrderIndex = idx + 1;
+                if (book.orderIndex !== newOrderIndex) {
+                    updates.push(updateDoc(doc(booksRef, book.id), { orderIndex: newOrderIndex }));
+                }
+            });
+
+            if (updates.length > 0) {
+                try {
+                    showCustomMessage(`Movendo livro para ${direction === 'up' ? 'cima' : 'baixo'}...`, 'info');
+                    await Promise.all(updates);
+                    startFirestoreListeners();
+
+                } catch (e) {
+                    showCustomMessage('Erro ao mover o livro.', 'error');
+                    console.error("Erro ao mover livro:", e);
+                }
+            }
+        };
+
+        window.saveAuthorInfo = async () => {
+            if (!isAdmin) return;
+            const newBio = authorAboutTextarea.value;
+
+            let newPhotoUrl = authorInfo.authorPhotoUrl;
+            const photoFile = authorPhotoFileInput.files[0];
+
+            if (photoFile) {
+                showCustomMessage('Fazendo upload da foto do autor...', 'info');
+                newPhotoUrl = await uploadFileAndGetUrl(photoFile, 'author', 'profile.jpg');
+                if (!newPhotoUrl) return;
+            } else if (!authorInfo.authorPhotoUrl) {
+                newPhotoUrl = INITIAL_AUTHOR_INFO.authorPhotoUrl;
+            }
+
+            try {
+                await setDoc(getAuthorProfileDocRef(), {
+                    ...authorInfo,
+                    bio: newBio,
+                    authorPhotoUrl: newPhotoUrl
+                }, { merge: true });
+                showCustomMessage('Informações do autor salvas!', 'success');
+                authorPhotoFileInput.value = '';
+                startFirestoreListeners();
+            } catch (e) {
+                showCustomMessage('Erro ao salvar informações do autor.', 'error');
+                console.error("Erro ao salvar autor:", e);
+            }
+        };
+
+        window.saveBook = async (event) => {
+            event.preventDefault();
+            if (!isAdmin) return;
+
+            const booksRef = getPublicBooksCollectionRef();
+
+            const formData = new FormData(bookForm);
+            const bookData = Object.fromEntries(formData.entries());
+            const bookId = bookForm.dataset.bookId;
+
+            let coverImageUrl = document.getElementById('coverImageUrlHidden').value || '';
+            const coverFile = document.getElementById('coverImageFile').files[0];
+
+            if (coverFile) {
+                showCustomMessage('Fazendo upload da capa do livro...', 'info');
+                coverImageUrl = await uploadFileAndGetUrl(coverFile, 'book', coverFile.name);
+                if (!coverImageUrl) return;
+            } else if (bookId) {
+                coverImageUrl = document.getElementById('coverImageUrlHidden').value;
+            }
+
+            bookData.coverImageUrl = coverImageUrl;
+            bookData.authorName = bookData.authorName || INITIAL_AUTHOR_INFO.name;
+
+            const existingBook = books.find(b => b.id === bookId);
+            const orderIndexValue = existingBook
+                ? existingBook.orderIndex
+                : (books.length > 0 ? Math.max(...books.map(b => b.orderIndex)) + 1 : 1);
+
+            bookData.orderIndex = orderIndexValue;
+
+            try {
+                if (bookId) {
+                    await updateDoc(doc(booksRef, bookId), bookData);
+                    showCustomMessage(`Livro "${bookData.title}" atualizado!`, 'success');
+                } else {
+                    await addDoc(booksRef, bookData);
+                    showCustomMessage(`Livro "${bookData.title}" adicionado!`, 'success');
+                }
+                closeModal(crudModal);
+                startFirestoreListeners();
+            } catch (e) {
+                showCustomMessage('Erro ao salvar o livro.', 'error');
+                console.error("Erro ao salvar livro:", e);
+            }
+        };
+
+        window.deleteBook = async (bookId, bookTitle) => {
+            if (!isAdmin) return;
+
+            const deleteAction = async () => {
+                try {
+                    await deleteDoc(doc(getPublicBooksCollectionRef(), bookId));
+                    showCustomMessage(`Livro "${bookTitle}" excluído com sucesso.`, 'success');
+                    startFirestoreListeners();
+                } catch (e) {
+                    showCustomMessage('Erro ao excluir o livro.', 'error');
+                    console.error("Erro ao excluir livro:", e);
+                }
+            };
+
+            openConfirmationModal(
+                "Excluir Livro",
+                `Tem certeza que deseja EXCLUIR o livro: "${bookTitle}"? Esta ação é irreversível.`,
+                deleteAction
+            );
+        };
+
+        // =========================================================
+        // 4. RENDERING E UI
+        // =========================================================
+
+        const renderViews = () => {
+            if (isAdmin) {
+                renderAdminDashboard();
+            } else {
+                applyFilters();
+            }
+        };
+
+        const renderGuestView = () => {
+            document.getElementById('admin-dashboard').classList.add('hidden');
+            const guestView = document.getElementById('guest-view');
+            guestView.classList.remove('hidden');
+
+            // Força limpeza da busca visualmente
+            const searchInput = document.getElementById('search-input');
+            if (searchInput && searchQuery === '') searchInput.value = '';
+
+            authorBioDisplay.innerHTML = authorInfo.bio.replace(/\n/g, '<br>');
+            authorPhotoDisplay.src = authorInfo.authorPhotoUrl || 'https://placehold.co/150x150/1e293b/f8fafc?text=Foto+do+Autor';
+
+            // Renderiza categorias (chips)
+            renderCategoryChips();
+
+            booksListContainer.innerHTML = '';
+
+            if (filteredBooks.length === 0) {
+                booksListContainer.innerHTML = `
+                    <div class="col-span-full text-center py-16 animate-fade-in-up">
+                        <svg class="w-16 h-16 mx-auto text-slate-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                        <p class="text-gray-400 text-lg">Nenhum livro encontrado para sua busca.</p>
+                        <button onclick="resetFilters()" class="mt-4 text-amber-500 hover:text-amber-400 font-medium underline">Limpar filtros</button>
+                    </div>`;
+                return;
+            }
+
+            filteredBooks.forEach((book, index) => {
+                // Cálculo de delay para animação stagger
+                const delayClass = `stagger-${(index % 3) + 1}`;
+
+                const bookCard = `
+                    <div class="glass-card rounded-xl overflow-hidden shadow-lg h-full flex flex-col group animate-fade-in-up md:animate-delay-${index * 100}">
+                        <div class="relative overflow-hidden aspect-[2/3] w-full bg-slate-800">
+                            <!-- Capa do Livro -->
+                            <img src="${book.coverImageUrl || 'https://placehold.co/400x600/1e293b/f8fafc?text=Capa+Indisponível'}" 
+                                 onerror="this.onerror=null;this.src='https://placehold.co/400x600/1e293b/f8fafc?text=Capa+Indisponível';"
+                                 alt="Capa de ${book.title}" 
+                                 class="w-full h-full object-cover transition duration-700 group-hover:scale-110">
+                            
+                            <!-- Overlay Hover -->
+                            <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
+                                <button onclick="openBookModal('${book.id}')"
+                                        class="w-full bg-accent-button hover:bg-amber-600 text-white font-semibold py-3 px-4 rounded-lg shadow-lg transform translate-y-4 group-hover:translate-y-0 transition duration-300">
+                                    Ver Detalhes
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="p-5 flex flex-col flex-grow text-left">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs font-semibold text-amber-500 uppercase tracking-wider">${book.genre || 'Geral'}</span>
+                                ${book.publicationDate ? `<span class="text-xs text-slate-500">${book.publicationDate.substring(0, 4)}</span>` : ''}
+                            </div>
+                            <h3 class="text-lg font-bold text-gray-100 leading-tight mb-1 group-hover:text-amber-400 transition-colors line-clamp-2">${book.title}</h3>
+                            <p class="text-sm text-gray-400 italic mb-3">Por ${book.authorName}</p>
+                            
+                            <!-- Descrição curta truncada -->
+                            <!-- <p class="text-sm text-gray-500 line-clamp-3 mb-4 flex-grow">${book.description}</p> -->
+                        </div>
+                    </div>
+                `;
+                booksListContainer.innerHTML += bookCard;
+            });
+        };
+
+        const applyFilters = () => {
+            filteredBooks = books.filter(book => {
+                const matchesSearch = book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    book.description.toLowerCase().includes(searchQuery.toLowerCase());
+                const matchesCategory = currentCategory === 'Todos' || (book.genre && book.genre.includes(currentCategory));
+                return matchesSearch && matchesCategory;
+            });
+            renderGuestView();
+        };
+
+        const renderCategoryChips = () => {
+            const container = document.getElementById('category-filters');
+            if (!container) return;
+
+            // Extrai gêneros únicos
+            const genres = ['Todos', ...new Set(books.map(b => b.genre || 'Outros').filter(g => g))];
+
+            container.innerHTML = genres.map(genre => {
+                const isActive = currentCategory === genre;
+                return `
+                    <button onclick="setCategory('${genre}')" 
+                            class="px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 whitespace-nowrap 
+                            ${isActive
+                        ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/25 scale-105'
+                        : 'bg-slate-800 text-gray-400 hover:bg-slate-700 hover:text-gray-200 border border-slate-700'}">
+                        ${genre}
+                    </button>
+                `;
+            }).join('');
+        };
+
+        window.setCategory = (category) => {
+            currentCategory = category;
+            applyFilters();
+        };
+
+        window.handleSearch = (e) => {
+            searchQuery = e.target.value;
+            applyFilters();
+        };
+
+        window.resetFilters = () => {
+            searchQuery = '';
+            currentCategory = 'Todos';
+            document.getElementById('search-input').value = '';
+            applyFilters();
+        };
+
+        const renderAdminDashboard = () => {
+            document.getElementById('guest-view').classList.add('hidden');
+            const adminDashboard = document.getElementById('admin-dashboard');
+            adminDashboard.classList.remove('hidden');
+
+            authorAboutTextarea.value = authorInfo.bio;
+            authorPhotoFileInput.value = '';
+
+            adminBooksTableBody.innerHTML = '';
+            if (books.length === 0) {
+                adminBooksTableBody.innerHTML = '<tr><td colspan="5" class="py-4 text-center text-gray-400">Nenhum livro cadastrado.</td></tr>';
+                return;
+            }
+
+            books.forEach(book => {
+                const row = document.createElement('tr');
+                row.className = 'admin-book-row border-b border-slate-700 hover:bg-slate-700/50 transition duration-150';
+                row.dataset.bookId = book.id;
+
+                row.innerHTML = `
+                    <td class="px-6 py-4 text-sm font-medium text-gray-300">${book.orderIndex || 999}</td>
+                    <td class="px-6 py-4 font-medium text-amber-300">${book.title}</td>
+                    <td class="px-6 py-4 text-sm text-gray-300">${book.genre || 'N/A'}</td>
+                    <td class="px-6 py-4 text-sm text-gray-300 hidden md:table-cell">${book.isbn || 'N/A'}</td>
+                    <td class="px-6 py-4 text-right whitespace-nowrap space-x-2">
+                        <!-- Botões de Ordenação -->
+                        <button onclick="moveBook('${book.id}', 'up')" 
+                                class="text-gray-400 hover:text-amber-400 p-1 rounded transition duration-150">
+                            <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
+                        </button>
+                        <button onclick="moveBook('${book.id}', 'down')"
+                                class="text-gray-400 hover:text-amber-400 p-1 rounded transition duration-150">
+                            <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        
+                        <!-- Botões de CRUD -->
+                        <button onclick="openCrudModal('${book.id}')"
+                                class="text-amber-400 hover:text-amber-300 transition duration-150 p-1 rounded hover:bg-slate-700">
+                            Editar
+                        </button>
+                        <button onclick="deleteBook('${book.id}', '${book.title}')"
+                                class="text-red-500 hover:text-red-400 transition duration-150 p-1 rounded hover:bg-slate-700">
+                            Excluir
+                        </button>
+                    </td>
+                `;
+                adminBooksTableBody.appendChild(row);
+            });
+        };
+
+        // =========================================================
+        // 7. FUNÇÕES DE MODAL
+        // =========================================================
+
+        window.openLoginModal = () => {
+            if (!isAdmin) {
+                loginModal.classList.remove('hidden');
+            }
+        };
+
+        // Função para abrir o modal de confirmação (Substitui confirm())
+        window.openConfirmationModal = (title, message, callback) => {
+            document.getElementById('confirm-title').textContent = title;
+            document.getElementById('confirm-message').textContent = message;
+
+            const confirmButton = document.getElementById('confirm-action-button');
+            // Limpa listeners anteriores para evitar múltiplas execuções
+            confirmButton.onclick = null;
+
+            confirmButton.onclick = () => {
+                closeModal(confirmationModal);
+                callback(); // Executa a função de exclusão/ação
+            };
+
+            confirmationModal.classList.remove('hidden');
+        };
+
+        // Abre o Modal de Detalhes do Livro para Convidados
+        window.openBookModal = (bookId) => {
+            const book = books.find(b => b.id === bookId);
+            if (!book) return;
+
+            // Data de Publicação formatada para mostrar apenas o ano, se disponível
+            let year = 'N/A';
+            if (book.publicationDate) {
+                try {
+                    year = book.publicationDate.substring(0, 4);
+                } catch (e) {
+                    year = 'N/A';
+                }
+            }
+
+            // Construção do link de WhatsApp
+            const whatsappText = encodeURIComponent(`Olá, Marcus! Gostaria de solicitar mais informações sobre o livro: "${book.title}" (Gênero: ${book.genre || 'N/A'}, Ano: ${year}).`);
+            const whatsappLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${whatsappText}`;
+
+            // Preenche o modal de Detalhes do Livro
+            document.getElementById('book-modal-cover').src = book.coverImageUrl || 'https://placehold.co/400x600/1e293b/f8fafc?text=Capa+Indisponível';
+            document.getElementById('book-modal-title').textContent = book.title;
+
+            // Autor, Gênero e Ano simplificados
+            document.getElementById('book-modal-author-info').innerHTML = `
+                <p class="text-base text-gray-400 italic mb-2">Por ${book.authorName}</p>
+                <div class="flex space-x-4 text-sm text-gray-400">
+                    <span class="font-semibold text-amber-300">${book.genre || 'N/A'}</span>
+                    <span>•</span>
+                    <span>${year}</span>
+                </div>
+            `;
+            // Sinopse
+            document.getElementById('book-modal-description').innerHTML = book.description.replace(/\n/g, '<br>');
+
+            // Atualiza o botão de solicitação
+            document.getElementById('solicitar-livro-button').href = whatsappLink;
+
+            bookModal.classList.remove('hidden');
+        };
+
+        window.openCrudModal = (bookId = null) => {
+            if (!isAdmin) return;
+
+            bookForm.reset();
+            bookForm.dataset.bookId = '';
+            crudModal.classList.remove('hidden');
+
+            // Resetando inputs de arquivo, pois eles não podem ter valores padrão
+            document.getElementById('coverImageFile').value = '';
+
+            if (bookId) {
+                // Modo Edição
+                const book = books.find(b => b.id === bookId);
+                crudTitle.textContent = 'Editar Livro';
+                bookForm.dataset.bookId = bookId;
+                // Preenche o formulário
+                for (const key in book) {
+                    const input = bookForm.elements[key];
+                    if (input && input.type !== 'file') input.value = book[key];
+                }
+                // Preenche o campo 'coverImageUrl' oculto para referência
+                document.getElementById('coverImageUrlHidden').value = book.coverImageUrl || '';
+
+            } else {
+                // Modo Novo Livro
+                crudTitle.textContent = 'Adicionar Novo Livro';
+                bookForm.elements['authorName'].value = INITIAL_AUTHOR_INFO.name; // Preenche o nome do autor (Marcus Martin)
+                document.getElementById('coverImageUrlHidden').value = '';
+            }
+        };
+
+        window.closeModal = (modalElement) => {
+            modalElement.classList.add('hidden');
+        };
+
+        // =========================================================
+        // 8. FUNÇÕES DE MENSAGENS E FULLSCREEN
+        // =========================================================
+
+        window.toggleFullscreen = async () => {
+            try {
+                if (!document.fullscreenElement) {
+                    await document.documentElement.requestFullscreen();
+                } else {
+                    await document.exitFullscreen();
+                }
+            } catch (e) {
+                console.error("Erro ao alternar tela cheia:", e);
+                showCustomMessage("Não foi possível alternar para tela cheia.", "error");
+            }
+            // A atualização do ícone é feita pelo event listener
+        };
+
+        const updateFullscreenIcon = () => {
+            const icon = document.getElementById('fullscreen-icon');
+            if (!icon) return;
+
+            if (document.fullscreenElement) {
+                // Ícone de Minimizar (Sair da Tela Cheia - Contract/Restore)
+                // Quatro cantos apontando para o centro
+                icon.innerHTML = `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 14h6v6M20 14h-6v6M4 10h6v-6M20 10h-6v-6" /></svg>`;
+            } else {
+                // Ícone de Maximizar (Entrar em Tela Cheia - Corners Pointing Out)
+                icon.innerHTML = `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M20 8V4m0 0h-4M4 16v4m0 0h4M20 16v4m0 0h-4" /></svg>`;
+            }
+        }
+        document.addEventListener('fullscreenchange', updateFullscreenIcon);
+
+        const messageBox = document.getElementById('custom-message-box');
+        const messageText = document.getElementById('custom-message-text');
+
+        const showCustomMessage = (message, type = 'info') => {
+            messageText.textContent = message;
+            // Remove todas as classes de cor antes de adicionar a correta
+            messageBox.classList.remove('hidden', 'bg-message-error', 'bg-message-success', 'bg-message-info');
+
+            let colorClass = 'bg-message-info';
+            if (type === 'success') colorClass = 'bg-message-success';
+            if (type === 'error') colorClass = 'bg-message-error';
+
+            messageBox.classList.add(colorClass);
+
+            setTimeout(() => {
+                messageBox.classList.add('hidden');
+            }, 3000);
+        };
+
+        window.showTutorial = () => {
+            showCustomMessage("Olá! Use 'Admin' para gerenciar seus livros (login: marcusmartin, senha: thiagocucabeludo). Na aba Admin, use as setas da tabela para mudar a ordem dos livros.", 'info');
+        }
+    </script>
+</head>
+
+<body class="min-h-screen">
+    <!-- Caixa de Mensagem Customizada (Toast) -->
+    <div id="custom-message-box"
+        class="fixed top-4 right-4 z-50 p-4 rounded-lg shadow-xl text-white transition-all duration-300 ease-in-out hidden bg-message-info">
+        <span id="custom-message-text"></span>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- TELA DE BOAS VINDAS (WELCOME SCREEN) -->
+    <!-- ============================================== -->
+    <section id="welcome-screen" class="hidden absolute inset-0 bg-slate-900 flex items-center justify-center p-8">
+        <div class="text-center p-10 bg-slate-800 rounded-xl shadow-2xl border border-amber-600 max-w-lg w-full">
+            <h1 class="text-5xl font-extrabold text-accent mb-4">Bem-vindo(a)</h1>
+            <p class="text-gray-300 text-lg mb-8">Vitrine Autoral de Marcus Martin</p>
+
+            <div class="space-y-4">
+                <button onclick="openLoginModal()"
+                    class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 rounded-lg transition duration-200 shadow-lg">
+                    Admin
+                </button>
+                <button onclick="handleGuestEntry()"
+                    class="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 rounded-lg transition duration-200 shadow-md">
+                    Convidado
+                </button>
+            </div>
+
+            <p class="text-gray-500 text-sm mt-8">Versão: <span id="app-version"></span></p>
+        </div>
+    </section>
+
+    <!-- ============================================== -->
+    <!-- APLICATIVO PRINCIPAL -->
+    <!-- ============================================== -->
+    <div id="main-container-app" class="flex flex-col min-h-screen">
+        <!-- HEADER (Barra de Navegação) -->
+        <header class="bg-slate-900 shadow-lg sticky top-0 z-10 border-b border-amber-800">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+                <h1 class="text-2xl font-bold text-accent tracking-wider">
+                    <a href="#home">Marcus Martin | <span class="text-gray-100">Vitrine Autoral</span></a>
+                </h1>
+                <div class="flex items-center space-x-4">
+                    <span id="auth-name-display" class="text-sm text-gray-400 italic">Usuário Convidado</span>
+
+                    <!-- Ícone de Tutorial/Ajuda (Só aparece para o Admin) -->
+                    <button id="tutorial-button" onclick="showTutorial()"
+                        class="p-2 text-gray-400 hover:text-accent transition duration-200 hidden">
+                        <span class="text-xl font-bold">?</span>
+                    </button>
+
+                    <!-- Ícone Fullscreen -->
+                    <button onclick="toggleFullscreen()"
+                        class="p-2 text-gray-400 hover:text-accent transition duration-200">
+                        <span id="fullscreen-icon">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 8V4m0 0h4M20 8V4m0 0h-4M4 16v4m0 0h4M20 16v4m0 0h-4">
+                                </path>
+                            </svg>
+                        </span>
+                    </button>
+
+                    <button id="login-button-desktop" onclick="openLoginModal()"
+                        class="bg-accent-button hover:bg-amber-600 text-white font-medium py-2 px-4 rounded-full transition duration-300 hidden md:block">
+                        Admin
+                    </button>
+                    <button id="logout-button" onclick="handleLogout()"
+                        class="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-full transition duration-300 hidden">
+                        Sair
+                    </button>
+                    <button id="mobile-login-button" onclick="openLoginModal()"
+                        class="bg-accent-button hover:bg-amber-600 text-white font-medium py-2 px-4 rounded-full transition duration-300 md:hidden">
+                        Admin
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- MAIN CONTENT -->
+        <main id="main-container" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10 flex-grow">
+
+            <!-- ============================================== -->
+            <!-- VIEW PARA CONVIDADOS (VITRINE) -->
+            <!-- ============================================== -->
+            <section id="guest-view" class="hidden">
+                <!-- HERO SECTION -->
+                <div
+                    class="hero-bg rounded-3xl p-8 md:p-12 mb-16 shadow-2xl border border-slate-700/50 flex flex-col md:flex-row items-center md:items-start space-y-8 md:space-y-0 md:space-x-12 animate-fade-in-up">
+
+                    <!-- Foto do Autor com Efeito -->
+                    <div class="relative flex-shrink-0 group">
+                        <div
+                            class="absolute -inset-1 bg-gradient-to-r from-amber-600 to-amber-300 rounded-full blur opacity-50 group-hover:opacity-100 transition duration-1000 group-hover:duration-200">
+                        </div>
+                        <img id="author-photo-display" src="" alt="Foto do Autor Marcus Martin"
+                            class="relative w-40 h-40 md:w-48 md:h-48 object-cover rounded-full border-4 border-slate-800 shadow-2xl z-10">
+                    </div>
+
+                    <!-- Texto Hero -->
+                    <div class="flex-grow text-center md:text-left z-10">
+                        <h2 class="text-xs font-bold text-amber-500 uppercase tracking-widest mb-2">Portfolio Literário
+                        </h2>
+                        <h1 class="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">
+                            Marcus Martin <br>
+                            <span class="text-slate-400 text-2xl md:text-3xl font-light font-sans">Escritor &
+                                Visionário</span>
+                        </h1>
+                        <p id="author-bio-display"
+                            class="text-slate-300 leading-relaxed text-lg max-w-2xl mx-auto md:mx-0 font-light">
+                            <!-- Bio é injetada via JS -->
+                        </p>
+
+                        <!-- Redes Sociais / Ações Rápidas -->
+                        <div class="mt-8 flex flex-wrap gap-4 justify-center md:justify-start">
+                            <a href="#books-section"
+                                class="bg-amber-600 hover:bg-amber-500 text-white font-semibold py-3 px-8 rounded-full transition shadow-lg shadow-amber-900/40 flex items-center">
+                                Explorar Obras
+                                <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                                </svg>
+                            </a>
+                            <a href="https://wa.me/5581987921952" target="_blank"
+                                class="glass-panel text-white hover:bg-slate-700/50 font-medium py-3 px-8 rounded-full transition flex items-center">
+                                Contato Direto
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SEÇÃO DE LIVROS -->
+                <div id="books-section" class="scroll-mt-24">
+                    <div class="flex flex-col md:flex-row justify-between items-end mb-10 gap-6">
+                        <div>
+                            <h3 class="text-3xl font-bold text-white mb-2">Biblioteca de Obras</h3>
+                            <p class="text-slate-400">Navegue pelo catálogo completo de publicações.</p>
+                        </div>
+
+                        <!-- Barra de Busca -->
+                        <div class="relative w-full md:w-auto min-w-[300px]">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="h-5 w-5 text-gray-500" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                </svg>
+                            </div>
+                            <input type="text" id="search-input" name="search-field-random"
+                                oninput="handleSearch(event)" autocomplete="off" readonly
+                                onfocus="this.removeAttribute('readonly');"
+                                style="background-color: rgba(30, 41, 59, 0.7);"
+                                class="glass-panel w-full pl-10 pr-4 py-3 rounded-xl text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none placeholder-gray-500 text-gray-200"
+                                placeholder="Buscar por título ou descrição...">
+                        </div>
+                    </div>
+
+                    <!-- Filtros de Categoria -->
+                    <div id="category-filters" class="flex flex-wrap gap-2 mb-10 pb-4 overflow-x-auto no-scrollbar">
+                        <!-- Chips injetados via JS -->
+                    </div>
+
+                    <!-- Grid de Livros -->
+                    <div id="books-list-container"
+                        class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+                        <!-- Cards de livros serão injetados aqui -->
+                    </div>
+                </div>
+
+                <!-- Rodapé de Créditos (Novo) -->
+                <footer class="mt-16 pt-8 border-t border-slate-700 text-center text-xs text-gray-500">
+                    <p>&copy; 2026 Marcus Martin | Vitrine Autoral. Todos os direitos reservados.</p>
+                    <div class="mt-2 text-gray-400 space-y-1 md:space-y-0 md:space-x-6">
+                        <span class="font-medium text-amber-500">Desenvolvedor: Renato Chagas</span>
+                        <span><svg class="inline w-4 h-4 mr-1 mb-0.5" fill="currentColor" viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M12 2.163c3.204 0 3.584.013 4.85.064 1.257.052 1.83.242 2.274.417.38.15.673.344.975.645.302.301.496.594.646.975.174.444.364 1.017.417 2.275.051 1.266.064 1.646.064 4.849 0 3.203-.013 3.583-.064 4.849-.052 1.26-.242 1.833-.417 2.277-.15.382-.344.675-.646.977-.302.302-.594.497-.975.647-.444.174-1.017.365-2.275.417-1.266.051-1.646.064-4.849.064-3.203 0-3.584-.013-4.85-.064-1.257-.052-1.83-.242-2.274-.417-.38-.15-.673-.344-.975-.645-.301-.302-.496-.594-.646-.975-.174-.444-.364-1.017-.417-2.275-.051-1.26-.064-1.646-.064-4.849 0-3.203.013-3.583.064-4.849.052-1.257.242-1.83.417-2.274.15-.38.344-.673.646-.975.302-.301.594-.496.975-.646.444-.174 1.017-.364 2.275-.417 1.26-.051 1.646-.064 4.849-.064zm0-2.163c-3.266 0-3.673.014-4.945.067-1.319.055-2.26.26-3.033.564-.727.288-1.253.642-1.802 1.191-.548.548-.903 1.074-1.191 1.801-.304.773-.509 1.714-.564 3.033-.053 1.272-.067 1.679-.067 4.945 0 3.266.014 3.673.067 4.945.055 1.319.26 2.26.564 3.033.288.727.642 1.253 1.191 1.802.548.548 1.074.903 1.801 1.191.773.304 1.714.509 3.033.564 1.272.053 1.679.067 4.945.067 3.266 0 3.673-.014 4.945-.067 1.319-.055 2.26-.26 3.033-.564.727-.288 1.253-.642 1.802-1.191.548-.548 1.074-.903 1.191-1.801.304-.773.509-1.714.564-3.033.053-1.272.067-1.679-.067-4.945 0-3.266-.014-3.673-.067-4.945-.055-1.319-.26-2.26-.564-3.033-.288-.727-.642-1.253-1.191-1.802-.548-.548-1.074-.903-1.801-1.191-.773-.304-1.714-.509-3.033-.564-1.272-.053-1.679-.067-4.945-.067zm0 4.305a4.945 4.945 0 100 9.89 4.945 4.945 0 000-9.89zM12 16a4 4 0 110-8 4 4 0 010 8z"
+                                    fill-rule="evenodd" clip-rule="evenodd"></path>
+                            </svg> <a href="https://instagram.com/renatochagas" target="_blank"
+                                class="hover:text-amber-400 transition">@renatochagas</a></span>
+                        <span><svg class="inline w-4 h-4 mr-1 mb-0.5" fill="currentColor" viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M12.035 1.5A10.535 10.535 0 0122.57 12.035c0 1.22-.11 2.427-.323 3.596l-1.32-.423c.18-.54.269-1.1.269-1.673 0-4.996-4.062-9.06-9.06-9.06-1.577 0-3.064.404-4.34 1.11L5.9 3.585A10.535 10.535 0 0112.035 1.5zM12.035 22.57A10.535 10.535 0 011.5 12.035c0-1.22.11-2.427.323 3.596l1.32.423c-.18.54-.269 1.1-.269 1.673 0 4.996 4.062 9.06 9.06 9.06 1.577 0 3.064-.404 4.34-1.11l1.835 1.056A10.535 10.535 0 0112.035 22.57zM18.5 7.5a1.5 1.5 0 100-3 1.5 1.5 0 000 3zM5.5 16.5a1.5 1.5 0 100-3 1.5 1.5 0 000 3zM15 17a1 1 0 100-2 1 1 0 000 2zM9 8a1 1 0 100-2 1 1 0 000 2zM12 14a2 2 0 100-4 2 2 0 000 4z"
+                                    fill-rule="evenodd" clip-rule="evenodd"></path>
+                            </svg> <a href="https://wa.me/5581996095125" target="_blank"
+                                class="hover:text-amber-400 transition">(81) 99609-5125</a></span>
+                    </div>
+                </footer>
+            </section>
+
+            <!-- ============================================== -->
+            <!-- DASHBOARD DO ADMINISTRADOR -->
+            <!-- ============================================== -->
+            <section id="admin-dashboard" class="hidden">
+                <h2 class="text-4xl font-bold mb-8 text-amber-300">Painel de Administração</h2>
+
+                <!-- 1. Gerenciar Informações do Autor -->
+                <div class="bg-slate-800 p-6 rounded-xl shadow-xl mb-8">
+                    <h3 class="text-2xl font-semibold text-gray-100 mb-4">Gerenciar Bio e Acesso</h3>
+
+                    <!-- Simulação de Alteração de Senha -->
+                    <div class="mb-4 pt-4 border-t border-slate-700">
+                        <label for="new-admin-password" class="block text-sm font-medium text-gray-300 mb-2">Alterar
+                            Senha do Admin (Simulada)</label>
+                        <div class="flex space-x-2">
+                            <input type="password" id="new-admin-password" placeholder="Nova Senha (mín. 6 caracteres)"
+                                class="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg focus:ring-amber-500 focus:border-amber-500 text-gray-100">
+                            <button onclick="changeAdminPassword()"
+                                class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-lg text-sm transition duration-200 whitespace-nowrap">
+                                Alterar
+                            </button>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-1">Usuário: marcusmartin</p>
+                    </div>
+
+                    <!-- Campo de upload de arquivo para Foto do Autor -->
+                    <label for="author-photo-file" class="block text-sm font-medium text-gray-300 mb-2 mt-6">Fazer
+                        Upload da Foto do Autor</label>
+                    <input type="file" id="author-photo-file" accept="image/*"
+                        class="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-gray-100 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-amber-500 file:text-white hover:file:bg-amber-600">
+                    <p class="text-xs text-gray-400 mt-1">O upload de um novo arquivo substituirá a imagem atual.</p>
+
+                    <label for="author-about" class="block text-sm font-medium text-gray-300 mt-4 mb-2">Biografia
+                        Completa (Aparece na Vitrine):</label>
+                    <textarea id="author-about" rows="6"
+                        class="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg focus:ring-amber-500 focus:border-amber-500 text-gray-100"
+                        placeholder="Escreva a descrição detalhada sobre você e suas obras."></textarea>
+                    <button id="save-author-info" onclick="saveAuthorInfo()"
+                        class="mt-4 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-200">
+                        Salvar Informações do Autor
+                    </button>
+                </div>
+
+                <!-- 2. Gerenciar Livros (CRUD) -->
+                <div class="bg-slate-800 p-6 rounded-xl shadow-xl">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-2xl font-semibold text-gray-100">Gerenciar Biblioteca de Livros</h3>
+                        <button onclick="openCrudModal()"
+                            class="bg-accent-button hover:bg-amber-600 text-white font-semibold py-2 px-4 rounded-lg flex items-center transition duration-200">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                            </svg>
+                            Novo Livro
+                        </button>
+                    </div>
+
+                    <!-- Tabela de Livros -->
+                    <div class="overflow-x-auto rounded-lg border border-slate-700">
+                        <table class="min-w-full divide-y divide-slate-700">
+                            <thead class="bg-slate-700">
+                                <tr>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                                        Ordem</th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                                        Título</th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                                        Gênero</th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase hidden md:table-cell tracking-wider">
+                                        ISBN</th>
+                                    <th
+                                        class="px-6 py-3 text-right text-xs font-medium text-gray-300 uppercase tracking-wider">
+                                        Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-books-table-body" class="bg-slate-800 divide-y divide-slate-700">
+                                <!-- Linhas de livros injetadas via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- MODAIS -->
+    <!-- ============================================== -->
+
+    <!-- Modal de Login -->
+    <div id="login-modal"
+        class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 transition-all duration-300">
+        <div
+            class="glass-panel p-8 rounded-2xl shadow-2xl w-full max-w-md border border-amber-500/30 relative animate-fade-in-up">
+            <button onclick="closeModal(loginModal)"
+                class="absolute top-4 right-4 text-gray-400 hover:text-white transition duration-200">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg>
+            </button>
+            <h3 class="text-2xl font-bold mb-6 text-center text-amber-400">Acesso Administrativo</h3>
+            <form id="login-form" onsubmit="handleAdminLogin(event)">
+                <div class="mb-4">
+                    <label for="username" class="block text-sm font-medium text-gray-300 mb-2">Usuário</label>
+                    <input type="text" id="username" name="username" required
+                        class="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg focus:ring-amber-500 focus:border-amber-500 text-gray-100"
+                        placeholder="Nome de Usuário">
+                </div>
+                <div class="mb-6">
+                    <label for="password" class="block text-sm font-medium text-gray-300 mb-2">Senha</label>
+                    <input type="password" id="password" name="password" required
+                        class="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg focus:ring-amber-500 focus:border-amber-500 text-gray-100"
+                        placeholder="Senha">
+                </div>
+                <button type="submit"
+                    class="w-full bg-accent-button hover:bg-amber-600 text-white font-bold py-3 rounded-lg transition duration-200">
+                    Entrar
+                </button>
+                <p class="text-xs text-gray-500 mt-4 text-center">Acesso exclusivo para o autor Marcus Martin.</p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Adicionar/Editar Livro (CRUD) -->
+    <div id="crud-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+        <div
+            class="bg-slate-800 p-8 rounded-xl shadow-2xl w-full max-w-lg border border-amber-600 relative overflow-y-auto max-h-[90vh]">
+            <button onclick="closeModal(crudModal)"
+                class="absolute top-4 right-4 text-gray-400 hover:text-white transition duration-200">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg>
+            </button>
+            <h3 id="crud-title" class="text-2xl font-bold mb-6 text-center text-amber-400">Adicionar Novo Livro</h3>
+            <form id="book-form" onsubmit="saveBook(event)">
+                <div class="space-y-4">
+                    <!-- Título -->
+                    <div>
+                        <label for="title" class="block text-sm font-medium text-gray-300 mb-2">Título do Livro</label>
+                        <input type="text" id="title" name="title" required
+                            class="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-gray-100"
+                            placeholder="Ex: O Legado das Sombras">
+                    </div>
+                    <!-- Nome do Autor -->
+                    <div>
+                        <label for="authorName" class="block text-sm font-medium text-gray-300 mb-2">Nome do
+                            Autor</label>
+                        <input type="text" id="authorName" name="authorName" required
+                            class="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-gray-100"
+                            placeholder="Marcus Martin">
+                    </div>
+                    <!-- Upload de Arquivo para Capa -->
+                    <div>
+                        <label for="coverImageFile" class="block text-sm font-medium text-gray-300 mb-2">Fazer Upload da
+                            Capa do Livro</label>
+                        <input type="file" id="coverImageFile" accept="image/*"
+                            class="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-gray-100 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-amber-500 file:text-white hover:file:bg-amber-600">
+                        <p class="text-xs text-gray-400 mt-1">O upload do arquivo substitui o link atual (ou
+                            placeholder).</p>
+                        <!-- Campo oculto para armazenar a URL existente durante a edição -->
+                        <input type="hidden" id="coverImageUrlHidden" name="coverImageUrl" value="">
+                    </div>
+                    <!-- Descrição Curta (Vitrine) -->
+                    <div>
+                        <label for="description" class="block text-sm font-medium text-gray-300 mb-2">Descrição
+                            Curta/Sinopse Completa</label>
+                        <textarea id="description" name="description" rows="5" required
+                            class="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-gray-100"
+                            placeholder="Sinopse completa e envolvente para ser exibida no modal de detalhes."></textarea>
+                    </div>
+                    <!-- Detalhes Adicionais (Grid) -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="genre" class="block text-sm font-medium text-gray-300 mb-2">Gênero</label>
+                            <input type="text" id="genre" name="genre"
+                                class="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-gray-100"
+                                placeholder="Fantasia, Thriller, etc.">
+                        </div>
+                        <div>
+                            <label for="publicationDate" class="block text-sm font-medium text-gray-300 mb-2">Data de
+                                Publicação</label>
+                            <input type="date" id="publicationDate" name="publicationDate"
+                                class="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-gray-100">
+                        </div>
+                    </div>
+                    <!-- Campo Extra (Mantido para persistência de dados) -->
+                    <div>
+                        <label for="isbn" class="block text-sm font-medium text-gray-300 mb-2">ISBN (Opcional)</label>
+                        <input type="text" id="isbn" name="isbn"
+                            class="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-gray-100"
+                            placeholder="978-8575027819">
+                    </div>
+                    <div>
+                        <label for="extraDetails" class="block text-sm font-medium text-gray-300 mb-2">Detalhes Extras
+                            (Para uso interno ou futuro)</label>
+                        <textarea id="extraDetails" name="extraDetails" rows="2"
+                            class="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-gray-100"
+                            placeholder="Detalhes que não serão exibidos na Ficha Técnica simplificada."></textarea>
+                    </div>
+
+                </div>
+
+                <button type="submit"
+                    class="w-full mt-6 bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg transition duration-200">
+                    Salvar Livro
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Detalhes do Livro (Para Convidados) -->
+    <div id="book-modal"
+        class="hidden fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-4 transition-all duration-300">
+        <div
+            class="glass-panel p-8 rounded-2xl shadow-2xl w-full max-w-4xl border border-amber-500/20 relative animate-fade-in-up overflow-y-auto max-h-[90vh]">
+            <button onclick="closeModal(bookModal)"
+                class="absolute top-4 right-4 text-gray-400 hover:text-white transition duration-200 z-10">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg>
+            </button>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Coluna da Capa -->
+                <div class="md:col-span-1 flex justify-center items-start">
+                    <img id="book-modal-cover" src="" alt="Capa do Livro"
+                        class="w-full max-w-[200px] md:max-w-full object-cover rounded-lg shadow-2xl border border-white/10 transform hover:scale-105 transition duration-500">
+                </div>
+
+                <!-- Coluna de Detalhes -->
+                <div class="md:col-span-2 flex flex-col h-full">
+                    <!-- Título -->
+                    <h2 id="book-modal-title"
+                        class="text-3xl md:text-4xl font-bold text-white mb-2 leading-tight font-serif">Título do Livro
+                    </h2>
+
+                    <!-- Autor, Gênero e Ano simplificados aqui -->
+                    <div id="book-modal-author-info" class="mb-6 flex flex-wrap items-center gap-3">
+                        <!-- Conteúdo injetado via JS -->
+                    </div>
+
+                    <div class="glass-card p-6 rounded-xl mb-6 flex-grow">
+                        <h3
+                            class="text-sm font-semibold text-amber-500 uppercase tracking-widest mb-3 border-b border-white/10 pb-2">
+                            Sinopse</h3>
+                        <p id="book-modal-description"
+                            class="text-gray-300 leading-relaxed whitespace-pre-line text-base">
+                            <!-- Descrição detalhada do livro injetada via JS -->
+                        </p>
+                    </div>
+
+                    <!-- Botão de Solicitação de Livro -->
+                    <div class="mt-auto pt-4 flex justify-end">
+                        <a id="solicitar-livro-button" href="#" target="_blank"
+                            class="inline-flex items-center bg-green-600 hover:bg-green-500 text-white font-bold py-3 px-6 rounded-full transition duration-300 shadow-lg shadow-green-900/30 transform hover:-translate-y-1">
+                            <span class="mr-2">Solicitar Exemplar</span>
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.892 11.893-11.892 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmação Customizado (Substitui o alert/confirm nativo) -->
+    <div id="confirmation-modal"
+        class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+        <div class="bg-slate-800 p-8 rounded-xl shadow-2xl w-full max-w-sm border border-red-600 relative">
+            <h3 id="confirm-title" class="text-xl font-bold mb-4 text-red-400">Confirmar Ação</h3>
+            <p id="confirm-message" class="text-gray-300 mb-6">Tem certeza que deseja continuar com esta ação?</p>
+            <div class="flex justify-end space-x-3">
+                <button onclick="closeModal(confirmationModal)"
+                    class="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-white transition duration-200">
+                    Cancelar
+                </button>
+                <button id="confirm-action-button"
+                    class="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-white font-semibold transition duration-200">
+                    Confirmar
+                </button>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
