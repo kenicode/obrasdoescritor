@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Marcus Martin | Biblioteca Autoral</title>
+    <title>Marcos Martin | Biblioteca Autoral</title>
     <!-- Carrega Tailwind CSS para estilização moderna e dark mode -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -207,13 +207,13 @@
         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
         const cleanAppId = appId.replace(/\//g, '-');
         const WHATSAPP_NUMBER = "5581987921952";
-        const ADMIN_USERNAME = "marcusmartin";
+        const ADMIN_USERNAME = "marcosmartin";
         let ADMIN_PASSWORD = "thiagocucabeludo";
-        const ADMIN_USERNAME_DISPLAY = "Marcus Martin";
+        const ADMIN_USERNAME_DISPLAY = "Marcos Martin";
 
         const INITIAL_AUTHOR_INFO = {
             name: ADMIN_USERNAME_DISPLAY,
-            bio: 'Bem-vindo(a) à minha biblioteca autoral. Sou Marcus Martin e aqui apresento minhas obras. Navegue e clique em "Detalhes" para explorar a sinopse e ficha técnica de cada trabalho.',
+            bio: 'Bem-vindo(a) à minha biblioteca autoral. Sou Marcos Martin e aqui apresento minhas obras. Navegue e clique em "Detalhes" para explorar a sinopse e ficha técnica de cada trabalho.',
             authorPhotoUrl: 'https://placehold.co/150x150/1e293b/f8fafc?text=Foto+do+Autor'
         };
 
@@ -224,7 +224,7 @@
             { id: 'ex4', orderIndex: 4, title: 'O Mistério da Rua das Flores', authorName: ADMIN_USERNAME_DISPLAY, genre: 'Romance Policial', isbn: '978-8501069507', publicationDate: '2021-11-10', coverImageUrl: 'https://placehold.co/400x600/1e293b/f8fafc?text=Capa+Exemplo+4', description: 'Um assassinato aparentemente simples se transforma em um emaranhado de paixões e traições em uma pequena cidade litorânea.', extraDetails: 'Inspirado em fatos reais de 1950.' },
             { id: 'ex5', orderIndex: 5, title: 'A Revolução Silenciosa', authorName: ADMIN_USERNAME_DISPLAY, genre: 'Drama Histórico', isbn: '978-8580572836', publicationDate: '2020-05-25', coverImageUrl: 'https://placehold.co/400x600/1e293b/f8fafc?text=Capa+Exemplo+5', description: 'A saga de uma família de imigrantes que desafia as normas sociais durante um período de grandes mudanças políticas e culturais no Brasil.', extraDetails: 'Baseado em pesquisa de campo e documentos da época.' },
             { id: 'ex6', orderIndex: 6, title: 'Código Sigma', authorName: ADMIN_USERNAME_DISPLAY, genre: 'Tecno-Thriller', isbn: '978-8576848033', publicationDate: '2023-09-08', coverImageUrl: 'https://placehold.co/400x600/1e293b/f8fafc?text=Capa+Exemplo+6', description: 'Um hacker é recrutado por uma agência secreta para desvendar um código que pode paralisar a infraestrutura global em 48 horas.', extraDetails: 'Cheio de reviravoltas e alta tecnologia.' },
-            { id: 'ex7', orderIndex: 7, title: 'O Último Poema do Século', authorName: ADMIN_USERNAME_DISPLAY, genre: 'Poesia/Contos', isbn: '978-8535925403', publicationDate: '2019-02-18', coverImageUrl: 'https://placehold.co/400x600/1e293b/f8fafc?text=Capa+Exemplo+7', description: 'Uma coletânea de contos e poemas que exploram temas de identidade, melancolia e esperança na virada do milênio.', extraDetails: 'Uma obra-prima lírica de Marcus Martin.' },
+            { id: 'ex7', orderIndex: 7, title: 'O Último Poema do Século', authorName: ADMIN_USERNAME_DISPLAY, genre: 'Poesia/Contos', isbn: '978-8535925403', publicationDate: '2019-02-18', coverImageUrl: 'https://placehold.co/400x600/1e293b/f8fafc?text=Capa+Exemplo+7', description: 'Uma coletânea de contos e poemas que exploram temas de identidade, melancolia e esperança na virada do milênio.', extraDetails: 'Uma obra-prima lírica de Marcos Martin.' },
             { id: 'ex8', orderIndex: 8, title: 'Jardim de Vidro', authorName: ADMIN_USERNAME_DISPLAY, genre: 'Ficção Literária', isbn: '978-8525046039', publicationDate: '2024-06-12', coverImageUrl: 'https://placehold.co/400x600/1e293b/f8fafc?text=Capa+Exemplo+8', description: 'A história tocante de um artista recluso que encontra inspiração e redenção ao cuidar de um jardim secreto, feito inteiramente de vidro.', extraDetails: 'Um best-seller internacional.' },
         ];
 
@@ -275,7 +275,7 @@
         const uploadFileAndGetUrl = async (file, type, fileName) => {
             if (!storage) return null;
 
-            const filePath = `marcusmartin/img/${type}/${Date.now()}_${fileName}`;
+            const filePath = `marcosmartin/img/${type}/${Date.now()}_${fileName}`;
             const fileRef = storageRef(storage, filePath);
 
             try {
@@ -332,6 +332,12 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             setupRefs();
+
+            // Força scroll para o topo ao carregar/recarregar a página
+            if ('scrollRestoration' in history) {
+                history.scrollRestoration = 'manual';
+            }
+            window.scrollTo(0, 0);
 
             // Inicia o Firebase de forma assíncrona
             initFirebase();
@@ -412,7 +418,7 @@
                 // Força a renderização Admin
                 startFirestoreListeners();
 
-                showCustomMessage('Bem-vindo, Administrador Marcus Martin!', 'success');
+                showCustomMessage('Bem-vindo, Administrador Marcos Martin!', 'success');
             } else {
                 showCustomMessage('Credenciais inválidas.', 'error');
             }
@@ -453,7 +459,7 @@
         const updateAuthStatusUI = (isLoggedIn) => {
             if (isLoggedIn) {
                 document.getElementById('tutorial-button').classList.remove('hidden');
-                authNameDisplay.textContent = 'Modo Admin: Marcus Martin';
+                authNameDisplay.textContent = 'Modo Admin: Marcos Martin';
                 logoutButton.classList.remove('hidden');
                 document.getElementById('login-button-desktop').classList.add('hidden');
                 document.getElementById('mobile-login-button').classList.add('hidden');
@@ -959,7 +965,7 @@
             } else {
                 // Modo Novo Livro
                 crudTitle.textContent = 'Adicionar Novo Livro';
-                bookForm.elements['authorName'].value = INITIAL_AUTHOR_INFO.name; // Preenche o nome do autor (Marcus Martin)
+                bookForm.elements['authorName'].value = INITIAL_AUTHOR_INFO.name; // Preenche o nome do autor (Marcos Martin)
                 document.getElementById('coverImageUrlHidden').value = '';
             }
         };
@@ -1021,7 +1027,7 @@
         };
 
         window.showTutorial = () => {
-            showCustomMessage("Olá! Use 'Admin' para gerenciar seus livros (login: marcusmartin, senha: thiagocucabeludo). Na aba Admin, use as setas da tabela para mudar a ordem dos livros.", 'info');
+            showCustomMessage("Olá! Use 'Admin' para gerenciar seus livros (login: marcosmartin, senha: thiagocucabeludo). Na aba Admin, use as setas da tabela para mudar a ordem dos livros.", 'info');
         }
     </script>
 </head>
@@ -1039,7 +1045,7 @@
     <section id="welcome-screen" class="hidden absolute inset-0 bg-slate-900 flex items-center justify-center p-8">
         <div class="text-center p-10 bg-slate-800 rounded-xl shadow-2xl border border-amber-600 max-w-lg w-full">
             <h1 class="text-5xl font-extrabold text-accent mb-4">Bem-vindo(a)</h1>
-            <p class="text-gray-300 text-lg mb-8">Vitrine Autoral de Marcus Martin</p>
+            <p class="text-gray-300 text-lg mb-8">Vitrine Autoral de Marcos Martin</p>
 
             <div class="space-y-4">
                 <button onclick="openLoginModal()"
@@ -1064,7 +1070,7 @@
         <header class="bg-slate-900 shadow-lg sticky top-0 z-10 border-b border-amber-800">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
                 <h1 class="text-2xl font-bold text-accent tracking-wider">
-                    <a href="#home">Marcus Martin | <span class="text-gray-100">Vitrine Autoral</span></a>
+                    <a href="#home">Marcos Martin | <span class="text-gray-100">Vitrine Autoral</span></a>
                 </h1>
                 <div class="flex items-center space-x-4">
                     <span id="auth-name-display" class="text-sm text-gray-400 italic">Usuário Convidado</span>
@@ -1120,7 +1126,7 @@
                         <div
                             class="absolute -inset-1 bg-gradient-to-r from-amber-600 to-amber-300 rounded-full blur opacity-50 group-hover:opacity-100 transition duration-1000 group-hover:duration-200">
                         </div>
-                        <img id="author-photo-display" src="" alt="Foto do Autor Marcus Martin"
+                        <img id="author-photo-display" src="" alt="Foto do Autor Marcos Martin"
                             class="relative w-40 h-40 md:w-48 md:h-48 object-cover rounded-full border-4 border-slate-800 shadow-2xl z-10">
                     </div>
 
@@ -1129,7 +1135,7 @@
                         <h2 class="text-xs font-bold text-amber-500 uppercase tracking-widest mb-2">Portfolio Literário
                         </h2>
                         <h1 class="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">
-                            Marcus Martin <br>
+                            Marcos Martin <br>
                             <span class="text-slate-400 text-2xl md:text-3xl font-light font-sans">Escritor &
                                 Visionário</span>
                         </h1>
@@ -1196,7 +1202,7 @@
 
                 <!-- Rodapé de Créditos (Novo) -->
                 <footer class="mt-16 pt-8 border-t border-slate-700 text-center text-xs text-gray-500">
-                    <p>&copy; 2026 Marcus Martin | Vitrine Autoral. Todos os direitos reservados.</p>
+                    <p>&copy; 2026 Marcos Martin | Vitrine Autoral. Todos os direitos reservados.</p>
                     <div class="mt-2 text-gray-400 space-y-1 md:space-y-0 md:space-x-6">
                         <span class="font-medium text-amber-500">Desenvolvedor: Renato Chagas</span>
                         <span><svg class="inline w-4 h-4 mr-1 mb-0.5" fill="currentColor" viewBox="0 0 24 24"
@@ -1239,7 +1245,7 @@
                                 Alterar
                             </button>
                         </div>
-                        <p class="text-xs text-gray-400 mt-1">Usuário: marcusmartin</p>
+                        <p class="text-xs text-gray-400 mt-1">Usuário: marcosmartin</p>
                     </div>
 
                     <!-- Campo de upload de arquivo para Foto do Autor -->
@@ -1343,7 +1349,7 @@
                     class="w-full bg-accent-button hover:bg-amber-600 text-white font-bold py-3 rounded-lg transition duration-200">
                     Entrar
                 </button>
-                <p class="text-xs text-gray-500 mt-4 text-center">Acesso exclusivo para o autor Marcus Martin.</p>
+                <p class="text-xs text-gray-500 mt-4 text-center">Acesso exclusivo para o autor Marcos Martin.</p>
             </form>
         </div>
     </div>
@@ -1376,7 +1382,7 @@
                             Autor</label>
                         <input type="text" id="authorName" name="authorName" required
                             class="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-gray-100"
-                            placeholder="Marcus Martin">
+                            placeholder="Marcos Martin">
                     </div>
                     <!-- Upload de Arquivo para Capa -->
                     <div>
